@@ -66,8 +66,8 @@ const config: Config = {
                 sm: "calc(var(--radius) - 4px)"
             },
             fontFamily: {
-                sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
-                mono: ["var(--font-geist-mono)", "Menlo", "monospace"]
+                sans: ["Red Hat Display Variable", "Red Hat Display", "system-ui", "sans-serif"],
+                mono: ["Geist Mono Variable", "Geist Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"]
             },
             boxShadow: {
                 "xs": "0 1px 2px 0 rgb(0 0 0 / 0.05)"

@@ -1,10 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@fontsource-variable/red-hat-display";
+@import "@fontsource-variable/geist-mono";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    --font-sans: "Red Hat Display Variable", "Red Hat Display", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 

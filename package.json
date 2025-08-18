@@ -23,6 +23,8 @@
     "vite-plugin-solid": "^2.11.6"
   },
   "dependencies": {
+    "@fontsource-variable/geist-mono": "^5.2.6",
+    "@fontsource-variable/red-hat-display": "^5.2.6",
     "@kobalte/core": "^0.13.11",
     "@modular-forms/solid": "^0.25.1",
     "@solid-primitives/storage": "^4.3.3",
