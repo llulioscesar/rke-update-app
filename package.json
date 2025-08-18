@@ -31,7 +31,6 @@
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.15.1",
     "@tanstack/solid-query": "^5.85.3",
-    "framework7": "^8.3.4",
     "lucide-solid": "^0.539.0",
     "solid-js": "^1.9.9",
     "solid-sonner": "^0.2.8",

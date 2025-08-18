@@ -4,9 +4,10 @@ import { I18nProvider } from "@kobalte/core";
 import {
     SidebarProvider,
     SidebarInset,
-    SidebarTrigger
+    SidebarTrigger, Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage
 } from "~/components/ui";
 import { SidebarApp } from "~/components/layouts/sidebar";
+import {DropdownMenu} from "@kobalte/core/dropdown-menu";
 
 const App: Component<{ children: JSX.Element }> = (props) => {
     return (
@@ -23,6 +24,31 @@ const App: Component<{ children: JSX.Element }> = (props) => {
                             </div>
                         </header>
                         <main class="flex-1 flex flex-col overflow-hidden">
+                            <Breadcrumb>
+                                <BreadcrumbList>
+                                    <BreadcrumbItem>
+                                        <BreadcrumbLink asChild>
+                                            <a href="/">Home</a>
+                                        </BreadcrumbLink>
+                                    </BreadcrumbItem>
+                                    <BreadcrumbSeparator />
+                                    <BreadcrumbItem>
+                                        <DropdownMenu>
+                                            aaaaaaaa
+                                        </DropdownMenu>
+                                    </BreadcrumbItem>
+                                    <BreadcrumbSeparator />
+                                    <BreadcrumbItem>
+                                        <BreadcrumbLink asChild>
+                                            <a href="/docs/components">Components</a>
+                                        </BreadcrumbLink>
+                                    </BreadcrumbItem>
+                                    <BreadcrumbSeparator />
+                                    <BreadcrumbItem>
+                                        <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                                    </BreadcrumbItem>
+                                </BreadcrumbList>
+                            </Breadcrumb>
                             <Suspense>{props.children}</Suspense>
                         </main>
                     </SidebarInset>
