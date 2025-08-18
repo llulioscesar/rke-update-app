@@ -601,10 +601,11 @@ function SidebarMenuButton(props: SidebarMenuButtonProps) {
     local.class
   ));
 
-  const handleClick = (event: any) => {
+  const handleClick = (event: MouseEvent) => {
     // Llamar al onClick original si existe
     if (local.onClick) {
-      local.onClick(event)
+      // Call onClick with proper event type casting
+      (local.onClick as (e: MouseEvent) => void)(event)
     }
     
     // Cerrar sidebar móvil cuando se hace clic en un enlace

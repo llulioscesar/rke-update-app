@@ -1,28 +1,23 @@
-import {Suspense, type Component} from 'solid-js';
-import {A, useLocation} from '@solidjs/router';
-import {Toaster} from "solid-sonner";
-import {I18nProvider} from "@kobalte/core";
+import { Suspense, type Component, type JSX } from 'solid-js';
+import { Toaster } from "solid-sonner";
+import { I18nProvider } from "@kobalte/core";
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
-    SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
     SidebarProvider,
+    SidebarInset,
     SidebarTrigger
 } from "~/components/ui";
-import {SidebarApp} from "~/components/layouts/sidebar";
+import { SidebarApp } from "~/components/layouts/sidebar";
 
-const App: Component = (props: { children: Element }) => {
+const App: Component<{ children: JSX.Element }> = (props) => {
     return (
         <>
             <I18nProvider locale="es-CO">
-                <Toaster/>
+                <Toaster />
                 <SidebarProvider>
-                    <SidebarApp/>
+                    <SidebarApp />
                     <SidebarInset>
                         <header class="flex h-16 shrink-0 items-center gap-2">
-                            <SidebarTrigger/>
+                            <SidebarTrigger />
                             <div class="ml-auto">
                                 {/* Espacio para otros elementos del header */}
                             </div>
