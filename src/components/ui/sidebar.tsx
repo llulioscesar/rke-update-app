@@ -590,9 +590,9 @@ type SidebarMenuButtonProps<T extends HTMLElement = HTMLElement> =
     variant?: VariantProps<typeof sidebarMenuButtonVariants>["variant"];
     size?: VariantProps<typeof sidebarMenuButtonVariants>["size"];
 })
-    | (Omit<JSX.HTMLAttributes<T>, "class" | "children"> & {
+    | (Omit<JSX.HTMLAttributes<T>, "class" | "children" | "ref"> & {
     asChild: true;
-    children: (p: JSX.HTMLAttributes<T>) => JSX.Element;
+    children: (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element;
     isActive?: boolean;
     tooltip?: string | JSX.IntrinsicElements["div"];
     class?: string;
@@ -643,9 +643,9 @@ function SidebarMenuButton<T extends HTMLElement>(rawProps: SidebarMenuButtonPro
     // -------- asChild (function child) --------
     // Props genéricos de HTMLElement (sin ref para evitar el mismatch con <a/>)
     const renderAsChild = () => {
-        const { ref: _omitRef, ...noRef } = (rest as JSX.HTMLAttributes<HTMLElement>) as any;
-        const childProps: JSX.HTMLAttributes<HTMLElement> = mergeProps(noRef, { class: classes() }, dataAttrs());
-        return (local.children as (p: JSX.HTMLAttributes<HTMLElement>) => JSX.Element)(childProps);
+        const { ref: _omitRef, ...noRef } = (rest as any);
+        const childProps: Omit<JSX.HTMLAttributes<HTMLElement>, "ref"> = mergeProps(noRef, { class: classes() }, dataAttrs());
+        return (local.children as (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element)(childProps);
     };
 
     const button = (
