@@ -588,9 +588,8 @@ type SidebarMenuButtonProps = {
 } & JSX.ButtonHTMLAttributes<HTMLButtonElement> & JSX.AnchorHTMLAttributes<HTMLAnchorElement>
 
 function SidebarMenuButton(props: SidebarMenuButtonProps) {
-  const [local, others] = splitProps(props, ["asChild", "isActive", "variant", "size", "tooltip", "class", "children", "href"])
-  const { isMobile, state } = useSidebar()
-
+  const [local, others] = splitProps(props, ["asChild", "isActive", "variant", "size", "tooltip", "class", "children", "href", "onClick"])
+  const { isMobile, state, setOpenMobile } = useSidebar()
 
   const buttonClasses = createMemo(() => cn(
     sidebarMenuButtonVariants({ 
@@ -601,6 +600,18 @@ function SidebarMenuButton(props: SidebarMenuButtonProps) {
     local.isActive && "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
     local.class
   ));
+
+  const handleClick = (event: any) => {
+    // Llamar al onClick original si existe
+    if (local.onClick) {
+      local.onClick(event)
+    }
+    
+    // Cerrar sidebar móvil cuando se hace clic en un enlace
+    if (isMobile()) {
+      setOpenMobile(false)
+    }
+  }
 
   const dataAttributes = createMemo(() => ({
     "data-slot": "sidebar-menu-button",
@@ -614,11 +625,11 @@ function SidebarMenuButton(props: SidebarMenuButtonProps) {
   const isLink = local.href || local.asChild
   
   const button = isLink ? (
-    <a href={local.href} {...dataAttributes()} {...others}>
+    <a href={local.href} {...dataAttributes()} onClick={handleClick} {...others}>
       {local.children}
     </a>
   ) : (
-    <button {...dataAttributes()} {...others}>
+    <button {...dataAttributes()} onClick={handleClick} {...others}>
       {local.children}
     </button>
   )
