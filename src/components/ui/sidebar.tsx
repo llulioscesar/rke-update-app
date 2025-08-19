@@ -891,21 +891,21 @@ function SidebarMenuSubButton<T extends HTMLElement>(props: SidebarMenuSubButton
 function SidebarMenuSubButton<T extends HTMLElement>(rawProps: SidebarMenuSubButtonProps<T>): JSX.Element {
     const [local, rest] = splitProps(rawProps as any, ["asChild", "size", "isActive", "class", "children"]);
 
-    const classes = () => cn(
+    const classes = createMemo(() => cn(
         "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
         "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
         local.size === "sm" && "text-xs",
         local.size === "md" && "text-sm",
         "group-data-[collapsible=icon]:hidden",
         local.class
-    );
+    ));
 
-    const dataAttrs = () => ({
+    const dataAttrs = createMemo(() => ({
         "data-slot": "sidebar-menu-sub-button",
         "data-sidebar": "menu-sub-button",
         "data-size": local.size,
         "data-active": local.isActive,
-    });
+    }));
 
     // -------- anchor nativo --------
     const renderAnchor = () => (

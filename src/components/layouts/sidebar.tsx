@@ -9,7 +9,7 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
-    SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem
+    SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem
 } from "~/components/ui";
 import {A, useLocation} from "@solidjs/router";
 import {LayoutDashboard} from "lucide-solid";
@@ -91,9 +91,19 @@ const SidebarApp = () => {
                                         </CollapsibleTrigger>
                                         <CollapsibleContent>
                                             <SidebarMenuSub>
+                                                {/* loop */}
                                                 <SidebarMenuSubItem>
-                                                    Helm
+                                                    <SidebarMenuSubButton asChild>
+                                                        {(p) => (<A href="" {...p}>Helm</A>)}
+                                                    </SidebarMenuSubButton>
                                                 </SidebarMenuSubItem>
+
+                                                <SidebarMenuSubItem>
+                                                    <SidebarMenuSubButton asChild>
+                                                        {(p) => (<A href="" {...p}>Deploys</A>)}
+                                                    </SidebarMenuSubButton>
+                                                </SidebarMenuSubItem>
+
                                             </SidebarMenuSub>
                                         </CollapsibleContent>
                                     </SidebarMenuItem>
