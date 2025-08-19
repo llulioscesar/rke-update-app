@@ -193,7 +193,6 @@ function Sidebar(props: SidebarProps) {
                     onOpenChange={setOpenMobile}
                     modal={true}
                     preventScroll={true}
-                    restoreFocus={true}
                     forceMount={false}
                 >
                     <SheetContent

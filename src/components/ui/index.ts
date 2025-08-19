@@ -6,3 +6,4 @@ export * from './sheet';
 export * from './skeleton';
 export * from './tooltip';
 export * from './sidebar';
+export * from './collapsible';

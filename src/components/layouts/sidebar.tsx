@@ -1,4 +1,5 @@
 import {
+    Collapsible, CollapsibleContent, CollapsibleTrigger,
     Sidebar,
     SidebarContent,
     SidebarFooter,
@@ -8,7 +9,7 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
-    SidebarMenuItem
+    SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem
 } from "~/components/ui";
 import {A, useLocation} from "@solidjs/router";
 import {LayoutDashboard} from "lucide-solid";
@@ -73,6 +74,30 @@ const SidebarApp = () => {
                                         )}
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                    <SidebarGroup>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                <Collapsible defaultOpen class="group/collapsible">
+                                    <SidebarMenuItem>
+                                        <CollapsibleTrigger asChild>
+                                            {(props) => (
+                                                <SidebarMenuButton {...props}>
+                                                    RKE2
+                                                </SidebarMenuButton>
+                                            )}
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                            <SidebarMenuSub>
+                                                <SidebarMenuSubItem>
+                                                    Helm
+                                                </SidebarMenuSubItem>
+                                            </SidebarMenuSub>
+                                        </CollapsibleContent>
+                                    </SidebarMenuItem>
+                                </Collapsible>
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>
