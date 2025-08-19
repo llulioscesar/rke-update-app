@@ -28,7 +28,9 @@ const App: Component<{ children: JSX.Element }> = (props) => {
                                 <BreadcrumbList>
                                     <BreadcrumbItem>
                                         <BreadcrumbLink asChild>
-                                            <a href="/">Home</a>
+                                            {(p) => (
+                                                <a href="/" {...p}>Home</a>
+                                            )}
                                         </BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator />
@@ -40,7 +42,9 @@ const App: Component<{ children: JSX.Element }> = (props) => {
                                     <BreadcrumbSeparator />
                                     <BreadcrumbItem>
                                         <BreadcrumbLink asChild>
-                                            <a href="/docs/components">Components</a>
+                                            {(p) => (
+                                                <a href="/docs/components" {...p}>Components</a>
+                                            )}
                                         </BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator />

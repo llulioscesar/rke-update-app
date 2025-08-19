@@ -1,6 +1,5 @@
-import { JSX, Component, splitProps } from "solid-js"
-import { Slot } from "~/lib/utils/slot"
-import { ChevronRight, Ellipsis } from "lucide-solid"
+import { JSX, Component, splitProps, Show, mergeProps } from "solid-js"
+import { ChevronRight, MoreHorizontal } from "lucide-solid"
 
 import { cn } from "~/lib/utils"
 
@@ -41,30 +40,48 @@ function BreadcrumbItem(props: BreadcrumbItemProps) {
   )
 }
 
-interface BreadcrumbLinkProps extends JSX.AnchorHTMLAttributes<HTMLAnchorElement> {
-  asChild?: boolean
-}
+type BreadcrumbLinkProps<T extends HTMLElement = HTMLElement> =
+  | (Omit<JSX.AnchorHTMLAttributes<HTMLAnchorElement>, "class"> & {
+    asChild?: false;
+    children?: JSX.Element;
+    class?: string;
+  })
+  | (Omit<JSX.HTMLAttributes<T>, "class" | "children" | "ref"> & {
+    asChild: true;
+    children: (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element;
+    class?: string;
+  });
 
-function BreadcrumbLink(props: BreadcrumbLinkProps) {
-  const [local, others] = splitProps(props, ["asChild", "class"])
-  
-  if (local.asChild) {
-    return (
-      <Slot
-        data-slot="breadcrumb-link"
-        class={cn("hover:text-foreground transition-colors", local.class)}
-        {...others}
-      />
-    )
-  }
+function BreadcrumbLink(props: BreadcrumbLinkProps<HTMLAnchorElement>): JSX.Element;
+function BreadcrumbLink<T extends HTMLElement>(props: BreadcrumbLinkProps<T>): JSX.Element;
+function BreadcrumbLink<T extends HTMLElement>(rawProps: BreadcrumbLinkProps<T>): JSX.Element {
+  const [local, rest] = splitProps(rawProps as any, ["asChild", "class", "children"]);
+
+  const classes = () => cn("hover:text-foreground transition-colors", local.class);
+
+  const dataAttrs = () => ({
+    "data-slot": "breadcrumb-link",
+  });
+
+  // -------- anchor nativo --------
+  const renderAnchor = () => (
+    <a {...(rest as JSX.AnchorHTMLAttributes<HTMLAnchorElement>)} class={classes()} {...dataAttrs()}>
+      {local.children}
+    </a>
+  );
+
+  // -------- asChild (function child) --------
+  const renderAsChild = () => {
+    const { ref: _omitRef, ...noRef } = (rest as any);
+    const childProps: Omit<JSX.HTMLAttributes<HTMLElement>, "ref"> = mergeProps(noRef, { class: classes() }, dataAttrs());
+    return (local.children as (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element)(childProps);
+  };
 
   return (
-    <a
-      data-slot="breadcrumb-link"
-      class={cn("hover:text-foreground transition-colors", local.class)}
-      {...others}
-    />
-  )
+    <Show when={!!local.asChild} fallback={renderAnchor()}>
+      {renderAsChild()}
+    </Show>
+  );
 }
 
 interface BreadcrumbPageProps extends JSX.HTMLAttributes<HTMLSpanElement> {}
@@ -117,7 +134,7 @@ function BreadcrumbEllipsis(props: BreadcrumbEllipsisProps) {
       class={cn("flex size-9 items-center justify-center", local.class)}
       {...others}
     >
-      <Ellipsis class="size-4" />
+      <MoreHorizontal class="size-4" />
       <span class="sr-only">More</span>
     </span>
   )

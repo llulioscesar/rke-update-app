@@ -2,7 +2,6 @@ import {
     type Component, type JSX, createContext, useContext, createSignal, createMemo, onMount, onCleanup, splitProps,
     mergeProps, Show
 } from "solid-js"
-import {Dynamic} from "solid-js/web"
 import {cva} from "class-variance-authority"
 import type {VariantProps} from "class-variance-authority"
 import {PanelLeftIcon} from "lucide-solid"
@@ -452,59 +451,103 @@ function SidebarGroup(props: SidebarGroupProps) {
     )
 }
 
-type SidebarGroupLabelProps = {
-    class?: string
-    asChild?: boolean
-} & JSX.HTMLAttributes<HTMLDivElement>
+type SidebarGroupLabelProps<T extends HTMLElement = HTMLElement> =
+    | (Omit<JSX.HTMLAttributes<HTMLDivElement>, "class"> & {
+    asChild?: false;
+    children?: JSX.Element;
+    class?: string;
+})
+    | (Omit<JSX.HTMLAttributes<T>, "class" | "children" | "ref"> & {
+    asChild: true;
+    children: (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element;
+    class?: string;
+});
 
-function SidebarGroupLabel(props: SidebarGroupLabelProps) {
-    const [local, others] = splitProps(props, ["class", "asChild"])
+function SidebarGroupLabel(props: SidebarGroupLabelProps<HTMLDivElement>): JSX.Element;
+function SidebarGroupLabel<T extends HTMLElement>(props: SidebarGroupLabelProps<T>): JSX.Element;
+function SidebarGroupLabel<T extends HTMLElement>(rawProps: SidebarGroupLabelProps<T>): JSX.Element {
+    const [local, rest] = splitProps(rawProps as any, ["asChild", "class", "children"]);
 
-    const labelProps = {
+    const classes = () => cn(
+        "text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
+        local.class
+    );
+
+    const dataAttrs = () => ({
         "data-slot": "sidebar-group-label",
         "data-sidebar": "group-label",
-        class: cn(
-            "text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
-            "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
-            local.class
-        ),
-        ...others
-    }
+    });
+
+    // -------- div nativo --------
+    const renderDiv = () => (
+        <div {...(rest as JSX.HTMLAttributes<HTMLDivElement>)} class={classes()} {...dataAttrs()}>
+            {local.children}
+        </div>
+    );
+
+    // -------- asChild (function child) --------
+    const renderAsChild = () => {
+        const { ref: _omitRef, ...noRef } = (rest as any);
+        const childProps: Omit<JSX.HTMLAttributes<HTMLElement>, "ref"> = mergeProps(noRef, { class: classes() }, dataAttrs());
+        return (local.children as (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element)(childProps);
+    };
 
     return (
-        <Dynamic
-            component={local.asChild ? "div" : "div"}
-            {...labelProps}
-        />
-    )
+        <Show when={!!local.asChild} fallback={renderDiv()}>
+            {renderAsChild()}
+        </Show>
+    );
 }
 
-type SidebarGroupActionProps = {
-    class?: string
-    asChild?: boolean
-} & JSX.ButtonHTMLAttributes<HTMLButtonElement>
+type SidebarGroupActionProps<T extends HTMLElement = HTMLElement> =
+    | (Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "class"> & {
+    asChild?: false;
+    children?: JSX.Element;
+    class?: string;
+})
+    | (Omit<JSX.HTMLAttributes<T>, "class" | "children" | "ref"> & {
+    asChild: true;
+    children: (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element;
+    class?: string;
+});
 
-function SidebarGroupAction(props: SidebarGroupActionProps) {
-    const [local, others] = splitProps(props, ["class", "asChild"])
+function SidebarGroupAction(props: SidebarGroupActionProps<HTMLButtonElement>): JSX.Element;
+function SidebarGroupAction<T extends HTMLElement>(props: SidebarGroupActionProps<T>): JSX.Element;
+function SidebarGroupAction<T extends HTMLElement>(rawProps: SidebarGroupActionProps<T>): JSX.Element {
+    const [local, rest] = splitProps(rawProps as any, ["asChild", "class", "children"]);
 
-    const actionProps = {
+    const classes = () => cn(
+        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "after:absolute after:-inset-2 md:after:hidden",
+        "group-data-[collapsible=icon]:hidden",
+        local.class
+    );
+
+    const dataAttrs = () => ({
         "data-slot": "sidebar-group-action",
         "data-sidebar": "group-action",
-        class: cn(
-            "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
-            "after:absolute after:-inset-2 md:after:hidden",
-            "group-data-[collapsible=icon]:hidden",
-            local.class
-        ),
-        ...others
-    }
+    });
+
+    // -------- button nativo --------
+    const renderButton = () => (
+        <button {...(rest as JSX.ButtonHTMLAttributes<HTMLButtonElement>)} class={classes()} {...dataAttrs()}>
+            {local.children}
+        </button>
+    );
+
+    // -------- asChild (function child) --------
+    const renderAsChild = () => {
+        const { ref: _omitRef, ...noRef } = (rest as any);
+        const childProps: Omit<JSX.HTMLAttributes<HTMLElement>, "ref"> = mergeProps(noRef, { class: classes() }, dataAttrs());
+        return (local.children as (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element)(childProps);
+    };
 
     return (
-        <Dynamic
-            component={local.asChild ? "div" : "button"}
-            {...actionProps}
-        />
-    )
+        <Show when={!!local.asChild} fallback={renderButton()}>
+            {renderAsChild()}
+        </Show>
+    );
 }
 
 type SidebarGroupContentProps = {
@@ -673,38 +716,61 @@ function SidebarMenuButton<T extends HTMLElement>(rawProps: SidebarMenuButtonPro
     );
 }
 
-type SidebarMenuActionProps = {
-    class?: string
-    asChild?: boolean
-    showOnHover?: boolean
-} & JSX.ButtonHTMLAttributes<HTMLButtonElement>
+type SidebarMenuActionProps<T extends HTMLElement = HTMLElement> =
+    | (Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "class"> & {
+    asChild?: false;
+    children?: JSX.Element;
+    showOnHover?: boolean;
+    class?: string;
+})
+    | (Omit<JSX.HTMLAttributes<T>, "class" | "children" | "ref"> & {
+    asChild: true;
+    children: (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element;
+    showOnHover?: boolean;
+    class?: string;
+});
 
-function SidebarMenuAction(props: SidebarMenuActionProps) {
-    const [local, others] = splitProps(props, ["class", "asChild", "showOnHover"])
+function SidebarMenuAction(props: SidebarMenuActionProps<HTMLButtonElement>): JSX.Element;
+function SidebarMenuAction<T extends HTMLElement>(props: SidebarMenuActionProps<T>): JSX.Element;
+function SidebarMenuAction<T extends HTMLElement>(rawProps: SidebarMenuActionProps<T>): JSX.Element {
+    const [local, rest] = splitProps(rawProps as any, ["asChild", "class", "children", "showOnHover"]);
 
-    const actionProps = {
+    const classes = () => cn(
+        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-hover/menu-button:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "after:absolute after:-inset-2 md:after:hidden",
+        "peer-data-[size=sm]/menu-button:top-1",
+        "peer-data-[size=default]/menu-button:top-1.5",
+        "peer-data-[size=lg]/menu-button:top-2.5",
+        "group-data-[collapsible=icon]:hidden",
+        local.showOnHover &&
+        "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
+        local.class
+    );
+
+    const dataAttrs = () => ({
         "data-slot": "sidebar-menu-action",
         "data-sidebar": "menu-action",
-        class: cn(
-            "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-hover/menu-button:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
-            "after:absolute after:-inset-2 md:after:hidden",
-            "peer-data-[size=sm]/menu-button:top-1",
-            "peer-data-[size=default]/menu-button:top-1.5",
-            "peer-data-[size=lg]/menu-button:top-2.5",
-            "group-data-[collapsible=icon]:hidden",
-            local.showOnHover &&
-            "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
-            local.class
-        ),
-        ...others
-    }
+    });
+
+    // -------- button nativo --------
+    const renderButton = () => (
+        <button {...(rest as JSX.ButtonHTMLAttributes<HTMLButtonElement>)} class={classes()} {...dataAttrs()}>
+            {local.children}
+        </button>
+    );
+
+    // -------- asChild (function child) --------
+    const renderAsChild = () => {
+        const { ref: _omitRef, ...noRef } = (rest as any);
+        const childProps: Omit<JSX.HTMLAttributes<HTMLElement>, "ref"> = mergeProps(noRef, { class: classes() }, dataAttrs());
+        return (local.children as (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element)(childProps);
+    };
 
     return (
-        <Dynamic
-            component={local.asChild ? "div" : "button"}
-            {...actionProps}
-        />
-    )
+        <Show when={!!local.asChild} fallback={renderButton()}>
+            {renderAsChild()}
+        </Show>
+    );
 }
 
 type SidebarMenuBadgeProps = {
@@ -805,38 +871,62 @@ function SidebarMenuSubItem(props: SidebarMenuSubItemProps) {
     )
 }
 
-type SidebarMenuSubButtonProps = {
-    asChild?: boolean
-    size?: "sm" | "md"
-    isActive?: boolean
-    class?: string
-} & JSX.AnchorHTMLAttributes<HTMLAnchorElement>
+type SidebarMenuSubButtonProps<T extends HTMLElement = HTMLElement> =
+    | (Omit<JSX.AnchorHTMLAttributes<HTMLAnchorElement>, "class"> & {
+    asChild?: false;
+    children?: JSX.Element;
+    size?: "sm" | "md";
+    isActive?: boolean;
+    class?: string;
+})
+    | (Omit<JSX.HTMLAttributes<T>, "class" | "children" | "ref"> & {
+    asChild: true;
+    children: (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element;
+    size?: "sm" | "md";
+    isActive?: boolean;
+    class?: string;
+});
 
-function SidebarMenuSubButton(props: SidebarMenuSubButtonProps) {
-    const [local, others] = splitProps(props, ["asChild", "size", "isActive", "class"])
+function SidebarMenuSubButton(props: SidebarMenuSubButtonProps<HTMLAnchorElement>): JSX.Element;
+function SidebarMenuSubButton<T extends HTMLElement>(props: SidebarMenuSubButtonProps<T>): JSX.Element;
+function SidebarMenuSubButton<T extends HTMLElement>(rawProps: SidebarMenuSubButtonProps<T>): JSX.Element {
+    const [local, rest] = splitProps(rawProps as any, ["asChild", "size", "isActive", "class", "children"]);
 
-    const subButtonProps = {
+    const classes = () => cn(
+        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+        "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
+        local.size === "sm" && "text-xs",
+        local.size === "md" && "text-sm",
+        "group-data-[collapsible=icon]:hidden",
+        local.class
+    );
+
+    const dataAttrs = () => ({
         "data-slot": "sidebar-menu-sub-button",
         "data-sidebar": "menu-sub-button",
         "data-size": local.size,
         "data-active": local.isActive,
-        class: cn(
-            "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
-            "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
-            local.size === "sm" && "text-xs",
-            local.size === "md" && "text-sm",
-            "group-data-[collapsible=icon]:hidden",
-            local.class
-        ),
-        ...others
-    }
+    });
+
+    // -------- anchor nativo --------
+    const renderAnchor = () => (
+        <a {...(rest as JSX.AnchorHTMLAttributes<HTMLAnchorElement>)} class={classes()} {...dataAttrs()}>
+            {local.children}
+        </a>
+    );
+
+    // -------- asChild (function child) --------
+    const renderAsChild = () => {
+        const { ref: _omitRef, ...noRef } = (rest as any);
+        const childProps: Omit<JSX.HTMLAttributes<HTMLElement>, "ref"> = mergeProps(noRef, { class: classes() }, dataAttrs());
+        return (local.children as (p: Omit<JSX.HTMLAttributes<HTMLElement>, "ref">) => JSX.Element)(childProps);
+    };
 
     return (
-        <Dynamic
-            component={local.asChild ? "div" : "a"}
-            {...subButtonProps}
-        />
-    )
+        <Show when={!!local.asChild} fallback={renderAnchor()}>
+            {renderAsChild()}
+        </Show>
+    );
 }
 
 export {
